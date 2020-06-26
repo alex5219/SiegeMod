@@ -10,12 +10,9 @@ import com.alexjw.siegecraft.server.entity.EntityFootprint;
 import com.alexjw.siegecraft.server.entity.EntityRope;
 import com.alexjw.siegecraft.server.helper.SiegeHelper;
 import com.alexjw.siegecraft.server.operators.Operator;
-import net.minecraft.block.BlockAir;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -162,33 +159,8 @@ public class CommonEventHandler {
 
         if (event.getEntityLiving() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) event.getEntityLiving();
-            if (SiegeHelper.getOperator(entityPlayer) != null) {
-                /*
-                  TODO:
-                  - Prevent taking off armor
-                 */
-                BlockPos blockPosInfront;
-                EnumFacing enumFacing = entityPlayer.getHorizontalFacing();
-                switch (enumFacing) {
-                    case EAST:
-                        blockPosInfront = new BlockPos(entityPlayer.getPosition().getX() + 0.75, entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ());
-                        break;
-                    case WEST:
-                        blockPosInfront = new BlockPos(entityPlayer.getPosition().getX() - 0.75, entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ());
-                        break;
-                    case NORTH:
-                        blockPosInfront = new BlockPos(entityPlayer.getPosition().getX(), entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ() - 0.75);
-                        break;
-                    case SOUTH:
-                        blockPosInfront = new BlockPos(entityPlayer.getPosition().getX(), entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ() + 0.75);
-                        break;
-                    default:
-                        blockPosInfront = entityPlayer.getPosition();
-                        break;
-                }
-                if (entityPlayer.world.getBlockState(blockPosInfront).getBlock() instanceof BlockAir) {
-                    entityPlayer.setVelocity(entityPlayer.motionX, entityPlayer.motionY * 0, entityPlayer.motionZ);
-                }
+            if (SiegeHelper.getOperator(entityPlayer) != null && !SiegeHelper.canVault(entityPlayer)) {
+                entityPlayer.setVelocity(entityPlayer.motionX, entityPlayer.motionY * 0, entityPlayer.motionZ);
             } else if (SiegeHelper.isDroning(entityPlayer)) {
                 if (SiegeData.lastJump.get(entityPlayer) == null) {
                     SiegeData.lastJump.put(entityPlayer, 0);
@@ -196,6 +168,7 @@ public class CommonEventHandler {
                     if ((SiegeData.lastJump.get(entityPlayer) / 20) >= 6) {
                         SiegeData.lastJump.put(entityPlayer, 0);
                     } else {
+                        entityPlayer.velocityChanged = false;
                         entityPlayer.setVelocity(entityPlayer.motionX, entityPlayer.motionY * 0, entityPlayer.motionZ);
                     }
                 }

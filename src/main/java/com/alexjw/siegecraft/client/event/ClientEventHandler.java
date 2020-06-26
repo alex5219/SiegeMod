@@ -8,7 +8,7 @@ import com.alexjw.siegecraft.server.helper.SiegeHelper;
 import com.alexjw.siegecraft.server.items.ModItems;
 import com.alexjw.siegecraft.server.items.guns.IGun;
 import com.alexjw.siegecraft.server.items.guns.ItemStimPistol;
-import net.minecraft.block.BlockAir;
+import com.alexjw.siegecraft.server.operators.Operator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.ScaledResolution;
@@ -17,10 +17,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -28,6 +28,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+
+import java.util.Objects;
+import java.util.Random;
 
 import static com.alexjw.core.client.util.GuiUtil.drawTexturedQuadFit;
 
@@ -41,6 +44,8 @@ public class ClientEventHandler {
     private static final ResourceLocation none = new ResourceLocation(Siege.MODID, "textures/gui/icon/none.png");
     public static boolean isZooming;
     private static float lastFOV = 0;
+    private static Random random = new Random();
+    private static int count = 0;
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
@@ -127,38 +132,21 @@ public class ClientEventHandler {
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
-    public static void rappelShow(RenderGameOverlayEvent.Pre event) {
+    public static void hudShowText(RenderGameOverlayEvent.Pre event) {
         EntityPlayer entityPlayer = Minecraft.getMinecraft().player;
         if ((event.getType().equals(RenderGameOverlayEvent.ElementType.HOTBAR))) {
             if (entityPlayer != null) {
-                SiegePlayer siegePlayer = SiegeHelper.getSiegePlayerByEntity(entityPlayer);
-                if (siegePlayer != null) {
-                    BlockPos blockPosInfront;
-                    EnumFacing enumFacing = entityPlayer.getHorizontalFacing();
-                    switch (enumFacing) {
-                        case EAST:
-                            blockPosInfront = new BlockPos(entityPlayer.getPosition().getX() + 0.75, entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ());
-                            break;
-                        case WEST:
-                            blockPosInfront = new BlockPos(entityPlayer.getPosition().getX() - 0.75, entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ());
-                            break;
-                        case NORTH:
-                            blockPosInfront = new BlockPos(entityPlayer.getPosition().getX(), entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ() - 0.75);
-                            break;
-                        case SOUTH:
-                            blockPosInfront = new BlockPos(entityPlayer.getPosition().getX(), entityPlayer.getPosition().getY(), entityPlayer.getPosition().getZ() + 0.75);
-                            break;
-                        default:
-                            blockPosInfront = entityPlayer.getPosition();
-                            break;
-                    }
-                    if (!(entityPlayer.world.getBlockState(blockPosInfront).getBlock() instanceof BlockAir)) {
-                        if (entityPlayer.world.canSeeSky(entityPlayer.getPosition()) && !siegePlayer.isRapelling()) {
-                            ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-                            int xPos = scaledResolution.getScaledWidth();
-                            int yPos = scaledResolution.getScaledHeight();
-                            Minecraft.getMinecraft().ingameGUI.drawCenteredString(Minecraft.getMinecraft().fontRenderer, "Press 'F' to begin rappelling.", xPos / 2, (yPos / 2) + 90, -1);
-                        }
+                Operator operator = SiegeHelper.getOperator(entityPlayer);
+                if (operator != null) {
+                    ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+                    int xPos = scaledResolution.getScaledWidth();
+                    int yPos = scaledResolution.getScaledHeight();
+                    if (operator.getTeam().equals(Operator.Team.ATTACKER) && SiegeHelper.canRappel(entityPlayer)) {
+                        Minecraft.getMinecraft().ingameGUI.drawCenteredString(Minecraft.getMinecraft().fontRenderer, "Press 'F' to rappel.", xPos / 2, (yPos / 2) + 90, -1);
+                    } else if (SiegeHelper.isRopeOut(entityPlayer)) {
+                        Minecraft.getMinecraft().ingameGUI.drawCenteredString(Minecraft.getMinecraft().fontRenderer, "Press 'F' to remove your rope.", xPos / 2, (yPos / 2) + 90, -1);
+                    } else if (SiegeHelper.canVault(entityPlayer)) {
+                        Minecraft.getMinecraft().ingameGUI.drawCenteredString(Minecraft.getMinecraft().fontRenderer, "Press 'SPACE' to vault.", xPos / 2, (yPos / 2) + 90, -1);
                     }
                 }
             }
@@ -212,8 +200,8 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void renderArmorHud(RenderGameOverlayEvent.Pre event) {
         Minecraft mc = Minecraft.getMinecraft();
-        if (SiegeHelper.isDroning(mc.player)) {
-            if ((event.getType().equals(RenderGameOverlayEvent.ElementType.HOTBAR))) {
+        if ((event.getType().equals(RenderGameOverlayEvent.ElementType.HOTBAR))) {
+            if (SiegeHelper.isDroning(mc.player)) {
                 ScaledResolution scaledResolution = new ScaledResolution(mc);
                 GlStateManager.pushMatrix();
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 0.2F);
@@ -221,8 +209,6 @@ public class ClientEventHandler {
                 drawTexturedQuadFit(0.0D, 0.0D, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), -100.0D);
                 GlStateManager.popMatrix();
             }
-        }
-        if ((event.getType().equals(RenderGameOverlayEvent.ElementType.HOTBAR))) {
             if (SiegeData.isEyenoxActive.get(mc.player) != null) {
                 if (SiegeData.isEyenoxActive.get(mc.player)) {
                     ScaledResolution scaledResolution = new ScaledResolution(mc);
@@ -231,6 +217,26 @@ public class ClientEventHandler {
                     Minecraft.getMinecraft().getTextureManager().bindTexture(jackalHudTexture);
                     drawTexturedQuadFit(0.0D, 0.0D, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), -100.0D);
                     GlStateManager.popMatrix();
+                }
+            }
+            if (!SiegeHelper.isDroning(mc.player) && mc.player.isPotionActive(Objects.requireNonNull(Potion.getPotionById(22)))) {
+                Operator operator = SiegeHelper.getOperator(mc.player);
+                if (operator != null) {
+                    if (operator.getEnumTeam().equals(Operator.Team.ATTACKER)) {
+                        ScaledResolution scaledResolution = new ScaledResolution(mc);
+                        GlStateManager.pushMatrix();
+                        int randomTick = 0;
+                        if (count == 25) {
+                            randomTick = random.nextInt(4);
+                            count = 0;
+                        } else {
+                            count++;
+                        }
+                        GlStateManager.color((float) (1.0 - (randomTick / 4)), (float) (1.0 - (randomTick / 4)), (float) (1.0 - (randomTick / 4)), 0.25F);
+                        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(Siege.MODID, "textures/gui/adrenaline_hud_" + randomTick + ".png"));
+                        drawTexturedQuadFit(0.0D, 0.0D, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight(), -100.0D);
+                        GlStateManager.popMatrix();
+                    }
                 }
             }
         }

@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "normal": {
+      "model": "siegecraft:rope"
+    },
+    "facing=north": {
+      "model": "siegecraft:rope"
+    },
+    "facing=east": {
+      "model": "siegecraft:rope",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "siegecraft:rope",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "siegecraft:rope",
+      "y": 270
+    }
+  }
+}

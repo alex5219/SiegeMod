@@ -1,5 +1,6 @@
 package com.alexjw.siegecraft.server.helper;
 
+import com.alexjw.siegecraft.server.blocks.ModBlocks;
 import com.alexjw.siegecraft.server.data.SiegeData;
 import com.alexjw.siegecraft.server.data.SiegePlayer;
 import com.alexjw.siegecraft.server.entity.EntityCamera;
@@ -10,12 +11,18 @@ import com.alexjw.siegecraft.server.items.armor.ItemDroneArmor;
 import com.alexjw.siegecraft.server.items.armor.ItemOperatorArmor;
 import com.alexjw.siegecraft.server.operators.Operator;
 import com.alexjw.siegecraft.server.operators.OperatorManager;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -339,12 +346,114 @@ public class SiegeHelper {
     public static Operator getRandomDefender(){
         Random random = new Random();
         ArrayList<Operator> defenders = new ArrayList<>();
-        for(Operator operator:OperatorManager.operatorArrayList) {
+        for (Operator operator : OperatorManager.operatorArrayList) {
             if (operator.getTeam().equals(Operator.Team.DEFENDER) && !operator.isHidden()) {
                 defenders.add(operator);
             }
         }
         int operatorNumber = random.nextInt(defenders.size());
         return defenders.get(operatorNumber);
+    }
+
+    public static boolean isBlockConnecting(World world, BlockPos position) {
+        boolean isBlockConnecting = false;
+        int radius = 0;
+        int x = MathHelper.floor(position.getX());
+        int y = MathHelper.floor(position.getY());
+        int z = MathHelper.floor(position.getZ());
+        AxisAlignedBB aabb = new AxisAlignedBB((double) x - 1, y, (double) z - 1, x + 1, y, z + 1).expand(radius, 0, radius);
+
+        int i = MathHelper.floor(aabb.minX);
+        int j = MathHelper.floor(aabb.maxX + 1.0D);
+        int k = MathHelper.floor(aabb.minY);
+        int l = MathHelper.floor(aabb.maxY + 1.0D);
+        int i1 = MathHelper.floor(aabb.minZ);
+        int j1 = MathHelper.floor(aabb.maxZ + 1.0D);
+
+        for (int k1 = i; k1 < j; ++k1) {
+            for (int l1 = k; l1 < l; ++l1) {
+                for (int i2 = i1; i2 < j1; ++i2) {
+                    IBlockState block = world.getBlockState(new BlockPos(k1, l1, i2));
+                    if (!(block.getBlock().equals(Blocks.AIR)) && !(block.getBlock().equals(ModBlocks.blockRope))) {
+                        isBlockConnecting = true;
+                    }
+                }
+            }
+        }
+        return isBlockConnecting;
+    }
+
+    public static boolean checkForBlock(World world, BlockPos position, Block block) {
+        boolean isBlockAbove = false;
+        int radius = 0;
+        int x = MathHelper.floor(position.getX());
+        int y = MathHelper.floor(position.getY());
+        int z = MathHelper.floor(position.getZ());
+        AxisAlignedBB aabb = new AxisAlignedBB(x, y, z, x, y, z).expand(radius, 0, radius);
+
+        int i = MathHelper.floor(aabb.minX);
+        int j = MathHelper.floor(aabb.maxX + 1.0D);
+        int k = MathHelper.floor(aabb.minY);
+        int l = MathHelper.floor(aabb.maxY + 1.0D);
+        int i1 = MathHelper.floor(aabb.minZ);
+        int j1 = MathHelper.floor(aabb.maxZ + 1.0D);
+
+        for (int yy = 0; yy < 12; yy++) {
+            for (int k1 = i; k1 < j; ++k1) {
+                for (int l1 = k; l1 < l; ++l1) {
+                    for (int i2 = i1; i2 < j1; ++i2) {
+                        IBlockState blockCheck = world.getBlockState(new BlockPos(k1, l1 + yy, i2));
+                        if ((blockCheck.getBlock().equals(block))) {
+                            isBlockAbove = true;
+                        }
+                    }
+                }
+            }
+        }
+        return isBlockAbove;
+    }
+
+    public static boolean canVault(EntityPlayer entityPlayer) {
+        return isBlockConnecting(entityPlayer.getEntityWorld(), entityPlayer.getPosition());
+    }
+
+    public static boolean isRopeOut(EntityPlayer entityPlayer) {
+        boolean canRappel = false;
+        if (SiegeData.rappelList != null) {
+            if (SiegeData.rappelList.get(entityPlayer) != null) {
+                if (SiegeData.rappelList.get(entityPlayer).size() > 1) {
+                    canRappel = true;
+                }
+            }
+        }
+        return canRappel;
+    }
+
+    public static boolean canRappel(EntityPlayer entityPlayer) {
+        boolean canRappel = true;
+        BlockPos blockPos = entityPlayer.getPosition();
+        canRappel = !isRopeOut(entityPlayer);
+        if (entityPlayer.world.canSeeSky(blockPos)) {
+            for (int y = 0; y < 4; y++) {
+                if (!(isBlockConnecting(entityPlayer.getEntityWorld(), new BlockPos(blockPos.getX(), blockPos.getY() + y, blockPos.getZ())))) {
+                    canRappel = false;
+                }
+            }
+        }
+        if (checkForBlock(entityPlayer.world, blockPos, ModBlocks.blockFakeAir)) {
+            canRappel = true;
+        }
+        return canRappel;
+    }
+
+    public static int getRappelHeight(EntityPlayer entityPlayer) {
+        int height = 0;
+        BlockPos blockPos = entityPlayer.getPosition();
+        while (!entityPlayer.world.canSeeSky(blockPos)) {
+            height++;
+            entityPlayer.sendMessage(new TextComponentString("" + height));
+            blockPos = new BlockPos(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ());
+        }
+        return (height - 1);
     }
 }

@@ -15,7 +15,10 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class SiegeData {
+    public static HashMap<EntityPlayer, ArrayList<BlockPos>> rappelList = new HashMap<>();
+    public static HashMap<EntityPlayer, Boolean> isRappelOut = new HashMap<>();
     public static HashMap<EntityPlayer, Boolean> isEyenoxActive = new HashMap<>();
+    public static HashMap<String, Boolean> isUnderAdrenaline = new HashMap<>();
     public static HashMap<EntityPlayer, Integer> viewingCamera = new HashMap<>();
     public static HashMap<EntityPlayer, Integer> timeDroning = new HashMap<EntityPlayer, Integer>();
     public static HashMap<EntityPlayer, Integer> lastJump = new HashMap<EntityPlayer, Integer>();

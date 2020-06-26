@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.*;
@@ -151,43 +150,6 @@ public class ClientEventHandler {
                 }
             }
         }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void rappelRenderEvent(RenderLivingEvent.Pre event) {
-        if (event.getEntity() instanceof EntityPlayer) {
-            EntityPlayer entityPlayer = (EntityPlayer) event.getEntity();
-            SiegePlayer siegePlayer = SiegeHelper.getSiegePlayerByEntity(entityPlayer);
-            if (siegePlayer != null) {
-                if (siegePlayer.isRapelling()) {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.enableRescaleNormal();
-                    EnumFacing enumFacing = siegePlayer.getEnumFacing();
-                    switch (enumFacing) {
-                        case EAST:
-                            GlStateManager.rotate(90, 0, 0, 1);
-                            break;
-                        case WEST:
-                            GlStateManager.rotate(-90, 0, 0, 1);
-                            break;
-                        case NORTH:
-                            GlStateManager.rotate(90, 1, 0, 0);
-                            break;
-                        case SOUTH:
-                            GlStateManager.rotate(-90, 1, 0, 0);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onRenderPost(RenderLivingEvent.Post event) {
     }
 
     @SideOnly(Side.CLIENT)

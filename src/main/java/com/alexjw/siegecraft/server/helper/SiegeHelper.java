@@ -451,7 +451,6 @@ public class SiegeHelper {
         BlockPos blockPos = entityPlayer.getPosition();
         while (!entityPlayer.world.canSeeSky(blockPos)) {
             height++;
-            entityPlayer.sendMessage(new TextComponentString("" + height));
             blockPos = new BlockPos(blockPos.getX(), blockPos.getY() + 1, blockPos.getZ());
         }
         return (height - 1);

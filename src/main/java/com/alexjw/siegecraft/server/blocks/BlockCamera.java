@@ -55,5 +55,4 @@ public class BlockCamera extends Block {
             tileentity.setPos(pos);
         }
     }
-
 }

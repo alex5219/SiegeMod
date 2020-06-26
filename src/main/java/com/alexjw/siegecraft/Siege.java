@@ -16,12 +16,11 @@ import org.lwjgl.opengl.Display;
 import java.io.File;
 import java.nio.file.Paths;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
 @Mod(modid = Siege.MODID, name = Siege.NAME, version = Siege.VERSION, acceptedMinecraftVersions = "1.12.2")
 public class Siege extends DummyModContainer {
     public static final String MODID = "siegecraft";
     public static final String NAME = "Siege-Craft";
-    public static final String VERSION = "1.0.2";
+    public static final String VERSION = "1.0.3a";
     public static final String CATEGORY_CLIENT = "Client";
     public static final String CATEGORY_GENERAL = "General";
     public static boolean isStandalone;
@@ -38,7 +37,7 @@ public class Siege extends DummyModContainer {
         meta.name = NAME;
         meta.description = "A Rainbow Six Siege Inspired Minecraft mod.";
         meta.version = VERSION;
-        meta.authorList = Lists.newArrayList("AlexJW", "BBovard", "RaptorHunter303", "LucaC", "Qrow");
+        meta.authorList = Lists.newArrayList("AlexJW", "BBovard", "RaptorHunter303", "Qrow");
         meta.credits = "Thank you to everyone who donated on Patreon.";
         meta.url = "https://discord.gg/gxNVW7z";
     }
@@ -85,7 +84,7 @@ public class Siege extends DummyModContainer {
     public void construction(FMLLoadCompleteEvent event) {
         if (proxy instanceof ClientProxy) {
             ClientProxy cp = (ClientProxy) proxy;
-            cp.setWindowTitle(NAME + " (1.12.2)");
+            cp.setWindowTitle(NAME + " (1.12.2-" + VERSION + ")");
         }
     }
 }

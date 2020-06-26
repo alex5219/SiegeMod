@@ -48,7 +48,7 @@ public class BlockRookArmor extends Block {
         if (siegePlayer != null) {
             if (!siegePlayer.isArmored()) {
                 siegePlayer.setArmored(true);
-                playerIn.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 6000, 0));
+                playerIn.addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 6000, 0, false, false));
             }
         }
         return false;

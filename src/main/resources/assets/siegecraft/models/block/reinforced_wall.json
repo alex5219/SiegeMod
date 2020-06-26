@@ -2,10 +2,10 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "blockbench/texture_0",
-		"1": "blockbench/texture_1",
-		"2": "blockbench/texture_2",
-		"particle": "blockbench/texture_0"
+		"0": "siegecraft:blocks/texture_0",
+		"1": "siegecraft:blocks/texture_1",
+		"2": "siegecraft:blocks/texture_2",
+		"particle": "siegecraft:blocks/texture_0"
 	},
 	"elements": [
 		{

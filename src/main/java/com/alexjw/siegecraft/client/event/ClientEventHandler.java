@@ -6,7 +6,7 @@ import com.alexjw.siegecraft.server.data.SiegeData;
 import com.alexjw.siegecraft.server.data.SiegePlayer;
 import com.alexjw.siegecraft.server.helper.SiegeHelper;
 import com.alexjw.siegecraft.server.items.ModItems;
-import com.alexjw.siegecraft.server.items.guns.IGun;
+import com.alexjw.siegecraft.server.items.guns.ILeftClick;
 import com.alexjw.siegecraft.server.items.guns.ItemStimPistol;
 import com.alexjw.siegecraft.server.operators.Operator;
 import net.minecraft.client.Minecraft;
@@ -84,7 +84,7 @@ public class ClientEventHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onLeftClick(PlayerInteractEvent.LeftClickEmpty event) {
-        if (event.getItemStack().getItem().equals(ModItems.itemStimPistol)) {
+        if (event.getItemStack().getItem() instanceof ILeftClick) {
             if (event.isCancelable())
                 event.setCanceled(true);
         }
@@ -94,9 +94,9 @@ public class ClientEventHandler {
     @SubscribeEvent
     public void onMouseEvent(MouseEvent event) {
         Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND);
-        if (Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof IGun) {
+        if (Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ILeftClick) {
             if (event.getButton() == 0 && event.isButtonstate()) {
-                if (((IGun) Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem()).onLeftClick(Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND), Minecraft.getMinecraft().player)) {
+                if (((ILeftClick) Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND).getItem()).onLeftClick(Minecraft.getMinecraft().player.getHeldItem(EnumHand.MAIN_HAND), Minecraft.getMinecraft().player)) {
                     event.setCanceled(true);
                 }
             }

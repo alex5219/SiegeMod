@@ -32,43 +32,42 @@ public class MessageAttemptRappel implements IMessageHandler<MessageAttemptRappe
                 if (SiegeData.rappelList.get(entityPlayer) != null) {
                     if (SiegeHelper.canRappel(entityPlayer) || SiegeData.rappelList.get(entityPlayer).size() > 1) {
                         if (!(SiegeData.rappelList.get(entityPlayer).size() > 1)) {
-                            addRope(ctx, entityPlayer);
+                            addRope(entityPlayer);
                         } else {
-                            deleteRope(ctx, entityPlayer);
+                            deleteRope(entityPlayer);
                         }
                     } else {
-                        addRope(ctx, entityPlayer);
+                        addRope(entityPlayer);
                     }
                 } else if (SiegeHelper.canRappel(entityPlayer)) {
-                    addRope(ctx, entityPlayer);
+                    addRope(entityPlayer);
                 }
             }
         }
         return null;
     }
 
-    private void addRope(MessageContext ctx, EntityPlayer entityPlayer) {
-        ArrayList<BlockPos> rappelPos = null;
+    private void addRope(EntityPlayer entityPlayer) {
+        ArrayList<BlockPos> rappelPos;
         if (SiegeData.rappelList.get(entityPlayer) != null) {
             rappelPos = SiegeData.rappelList.get(entityPlayer);
         } else {
-            rappelPos = new ArrayList<BlockPos>();
+            rappelPos = new ArrayList<>();
         }
         for (int y = 0; y < SiegeHelper.getRappelHeight(entityPlayer); y++) {
             BlockPos newBlockPos = new BlockPos(entityPlayer.posX, entityPlayer.posY + y, entityPlayer.posZ);
-            ctx.getServerHandler().player.world.setBlockState(
-                    newBlockPos, ModBlocks.blockRope.getState(entityPlayer.getHorizontalFacing()));
+            entityPlayer.world.setBlockState(newBlockPos, ModBlocks.blockRope.getState(entityPlayer.getHorizontalFacing()));
             rappelPos.add(newBlockPos);
         }
         SiegeData.rappelList.put(entityPlayer, rappelPos);
     }
 
-    private void deleteRope(MessageContext ctx, EntityPlayer entityPlayer) {
-        ArrayList<BlockPos> blockPos = null;
+    private void deleteRope(EntityPlayer entityPlayer) {
+        ArrayList<BlockPos> blockPos;
         if (SiegeData.rappelList.get(entityPlayer) != null) {
             blockPos = SiegeData.rappelList.get(entityPlayer);
         } else {
-            blockPos = new ArrayList<BlockPos>();
+            blockPos = new ArrayList<>();
         }
         for (BlockPos blockPos1 : blockPos) {
             entityPlayer.world.setBlockToAir(blockPos1);

@@ -5,8 +5,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class MessageSwitchERC7 implements IMessageHandler<MessageSwitchERC7, IMessage>, IMessage {
-    public MessageSwitchERC7() {
+public class MessageERC7 implements IMessageHandler<MessageERC7, IMessage>, IMessage {
+    public MessageERC7() {
     }
 
     @Override
@@ -18,7 +18,7 @@ public class MessageSwitchERC7 implements IMessageHandler<MessageSwitchERC7, IMe
     }
 
     @Override
-    public IMessage onMessage(MessageSwitchERC7 message, MessageContext ctx) {
+    public IMessage onMessage(MessageERC7 message, MessageContext ctx) {
 
         return null;
     }

@@ -13,8 +13,8 @@ public class SiegeNetworkHandler extends ThematicNetworkHelper {
     public static void registerPackets() {
         wrapper = ThematicNetworkHelper.getWrapper(Siege.MODID);
         registerMessage(MessageAdrenalSurge.class);
-        registerMessage(MessageShootPistol.class);
-        registerMessage(MessageReloadPistol.class);
+        registerMessage(MessageShoot.class);
+        registerMessage(MessageReload.class);
         registerMessage(MessageBlowtorch.class);
         registerMessage(MessagePlayerUpdate.class);
         registerMessage(MessageSwapDevice.class);

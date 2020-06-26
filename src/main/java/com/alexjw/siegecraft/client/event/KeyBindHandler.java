@@ -3,7 +3,7 @@ package com.alexjw.siegecraft.client.event;
 import com.alexjw.siegecraft.Siege;
 import com.alexjw.siegecraft.client.settings.SiegeKeys;
 import com.alexjw.siegecraft.network.MessageAttemptRappel;
-import com.alexjw.siegecraft.network.MessageReloadPistol;
+import com.alexjw.siegecraft.network.MessageReload;
 import com.alexjw.siegecraft.network.MessageSwitchCamera;
 import com.alexjw.siegecraft.network.SiegeNetworkHandler;
 import net.minecraft.client.settings.KeyBinding;
@@ -26,7 +26,7 @@ public class KeyBindHandler {
             SiegeNetworkHandler.wrapper.sendToServer(new MessageAttemptRappel());
         }
         if (keyBindings[1].isKeyDown()) {
-            SiegeNetworkHandler.wrapper.sendToServer(new MessageReloadPistol());
+            SiegeNetworkHandler.wrapper.sendToServer(new MessageReload());
         }
         if (keyBindings[2].isKeyDown()) {
             ClientEventHandler.isLeaningLeft = !ClientEventHandler.isLeaningLeft;

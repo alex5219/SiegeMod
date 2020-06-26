@@ -5,8 +5,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class MessageSwitchSledge implements IMessageHandler<MessageSwitchSledge, IMessage>, IMessage {
-    public MessageSwitchSledge() {
+public class MessageEyenox implements IMessageHandler<MessageEyenox, IMessage>, IMessage {
+    public MessageEyenox() {
     }
 
     @Override
@@ -18,7 +18,7 @@ public class MessageSwitchSledge implements IMessageHandler<MessageSwitchSledge,
     }
 
     @Override
-    public IMessage onMessage(MessageSwitchSledge message, MessageContext ctx) {
+    public IMessage onMessage(MessageEyenox message, MessageContext ctx) {
 
         return null;
     }

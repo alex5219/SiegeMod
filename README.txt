@@ -1,0 +1,1 @@
+This project is no longer being developed. If you would like to continue this project please contact me on discord @ AlexW#8575. Usage, modification, and everything else is allowed. It is preferred that you do not sell any of this software or use it in any commercial projects, but I cannot do anything to stop you.
